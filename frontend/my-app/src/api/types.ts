@@ -3,6 +3,11 @@ export type Profile = {
   habits: number;
 };
 
+export type AuthResponse = Profile & {
+  access_token: string;
+  token_type: "Bearer";
+};
+
 export type LoginRequest = {
   username: string;
   password: string;

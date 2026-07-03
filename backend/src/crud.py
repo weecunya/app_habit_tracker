@@ -9,14 +9,13 @@ from .models import User, Habit
 from .schemas import *
 
 from sqlalchemy.orm import Session
-from fastapi import Request, Response
+from fastapi import Request
 
 
 def create_user(
         db: Session,
-        payload: RegisterRequest,
-        response: Response
-) -> ProfileRead:
+        payload: RegisterRequest
+) -> AuthResponse:
     token = jwt.encode({
         "username": payload.username,
         "password": hash_password(payload.password),
@@ -33,27 +32,25 @@ def create_user(
     db.commit()
     db.refresh(db_user)
 
-    response.set_cookie(key="access-token", value=token, httponly=True, secure=True, samesite=None)
-
-    return ProfileRead(
+    return AuthResponse(
         username=db_user.username,
-        habits=db_user.habits
+        habits=db_user.habits,
+        access_token=str(token)
     )
 
 def get_user(
         db: Session,
-        request: LoginRequest,
-        response: Response
-) -> ProfileRead:
+        request: LoginRequest
+) -> AuthResponse:
         db_user = db.query(User).filter(User.username == request.username).scalar()
         if not db_user:
             raise HTTPException(status_code=403, detail="User not found")
         if not check_password(plain=request.password, hashed=db_user.password):
             raise HTTPException(status_code=403, detail="Invalid password")
-        response.set_cookie(key="access-token", value=db_user.jwt_token, httponly=True, secure=True, samesite=None)
-        return ProfileRead(
+        return AuthResponse(
             username=db_user.username,
-            habits=db_user.habits
+            habits=db_user.habits,
+            access_token=db_user.jwt_token
         )
 
 

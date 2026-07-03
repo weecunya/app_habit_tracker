@@ -52,3 +52,8 @@ class RegisterRequest(BaseModel):
 class ProfileRead(BaseModel):
     username: str
     habits: int
+
+
+class AuthResponse(ProfileRead):
+    access_token: str
+    token_type: str = "Bearer"

@@ -2,14 +2,16 @@ import hashlib
 import secrets
 
 import jwt
-from .models import User
 from  .config import settings
 
 
 def get_user_from_token(request):
-    print(request.cookies.get('access-token'))
-    token = request.cookies.get('access-token')
-    if not token:
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        return None
+
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
         return None
 
     try:

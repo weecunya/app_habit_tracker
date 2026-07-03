@@ -4,7 +4,7 @@
 
 ## Стек
 
-- **Backend** — Python FastAPI, SQLAlchemy, SQLite, JWT (cookies)
+- **Backend** — Python FastAPI, SQLAlchemy, SQLite, JWT (Bearer)
 - **Frontend** — React 18, TypeScript, Vite 6
 - **Mobile** — Flutter (WebView wrapper)
 - **Deploy** — Docker Compose
@@ -117,7 +117,7 @@ docker compose up --build -d
 
 ## Примечания
 
-- Авторизация через JWT в http-only cookie (`access-token`)
+- Авторизация через JWT Bearer token в заголовке `Authorization`
 - В проекте могут быть зарегистрированы максимум два пользователя (партнёра)
 - Пустой список привычек backend возвращает как 404 — frontend корректно обрабатывает это как пустой массив
 - Привычки можно отметить выполненными, снять выполнение через API пока нельзя

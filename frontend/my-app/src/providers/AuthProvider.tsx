@@ -5,6 +5,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { clearAuthToken, getAuthToken, setAuthToken } from "../api/client";
 import { getProfile } from "../api/profile";
 import { login, register } from "../api/auth";
 import type { Profile } from "../api/types";
@@ -20,9 +21,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!getAuthToken()) {
+      setIsLoading(false);
+      return;
+    }
+
     getProfile()
       .then(setUser)
-      .catch(() => setUser(null))
+      .catch(() => {
+        clearAuthToken();
+        setUser(null);
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -31,14 +40,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isLoading,
       signIn: async (payload) => {
-        const profile = await login(payload);
-        setUser(profile);
+        const auth = await login(payload);
+        setAuthToken(auth.access_token);
+        setUser({ username: auth.username, habits: auth.habits });
       },
       signUp: async (payload) => {
-        const profile = await register(payload);
-        setUser(profile);
+        const auth = await register(payload);
+        setAuthToken(auth.access_token);
+        setUser({ username: auth.username, habits: auth.habits });
       },
-      signOut: () => setUser(null),
+      signOut: () => {
+        clearAuthToken();
+        setUser(null);
+      },
       refreshUser,
     }),
     [isLoading, refreshUser, user],
