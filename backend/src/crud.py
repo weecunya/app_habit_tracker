@@ -90,7 +90,8 @@ def create_habit(
         request: Request
 ) -> HabitRead:
     body= get_user_from_token(request)
-
+    if not body:
+        raise HTTPException(status_code=403, detail="Invalid token")
     db_user = db.query(User).filter(User.username == body.get('username')).scalar()
     db_user.habits += 1
     db.add(db_user)
