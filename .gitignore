@@ -1,5 +1,5 @@
 .venv/
-.env
+backend/.env
 .db
 plan.md
 plan-done.md
