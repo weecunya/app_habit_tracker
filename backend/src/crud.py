@@ -33,7 +33,7 @@ def create_user(
     db.commit()
     db.refresh(db_user)
 
-    response.set_cookie(key="access-token", value=token, httponly=True, secure=False)
+    response.set_cookie(key="access-token", value=token, httponly=True, secure=True, samesite=None, domain=".vercel.app")
 
     return ProfileRead(
         username=db_user.username,
@@ -50,7 +50,7 @@ def get_user(
             raise HTTPException(status_code=403, detail="User not found")
         if not check_password(plain=request.password, hashed=db_user.password):
             raise HTTPException(status_code=403, detail="Invalid password")
-        response.set_cookie(key="access-token", value=db_user.jwt_token, httponly=True, secure=False)
+        response.set_cookie(key="access-token", value=db_user.jwt_token, httponly=True, secure=True, samesite=None, domain=".vercel.app")
         return ProfileRead(
             username=db_user.username,
             habits=db_user.habits
